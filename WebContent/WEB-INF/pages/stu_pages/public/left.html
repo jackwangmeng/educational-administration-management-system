@@ -1,0 +1,84 @@
+<%@page pageEncoding="UTF-8"%>
+<div class="col-md-2">
+
+					<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+						<div class="panel panel-primary">
+							<div class="panel-heading" role="tab" id="headingOne">
+								<h4 class="panel-title">
+        							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+          								课程管理
+       								 </a>
+      							</h4>
+							</div>
+							<div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+								<div class="list-group">
+									<a href="<%=request.getContextPath()%>/stu/courseMange/addedCoursePage.do" class="list-group-item"  onclick="fun()">已选课程</a>
+									<a href="<%=request.getContextPath()%>/stu/courseMange/addCourseCenterIndex.do" class="list-group-item">选课中心</a>
+								</div>
+							</div>
+						</div>
+
+						<div class="panel panel-primary">
+							<div class="panel-heading" role="tab" id="headingTwo">
+								<h4 class="panel-title">
+        							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          								课程成绩
+       								 </a>
+      							</h4>
+							</div>
+							<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+								<div class="list-group">
+									<a href="<%=request.getContextPath()%>/stu/courseScore/courseScoreList.do" class="list-group-item">查询成绩</a>
+								</div>
+							</div>
+						</div>
+
+						<div class="panel panel-primary">
+							<div class="panel-heading" role="tab" id="headingThree">
+								<h4 class="panel-title">
+        							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          								教学评价
+       								 </a>
+      							</h4>
+							</div>
+							<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+								<div class="list-group">
+									<a href="" class="list-group-item">评教</a>
+									<a href="" class="list-group-item">查看评教</a>
+								</div>
+							</div>
+						</div>
+
+						<div class="panel panel-primary">
+							<div class="panel-heading" role="tab" id="headingFour">
+								<h4 class="panel-title">
+        							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+          								查看课表
+       								 </a>
+      							</h4>
+							</div>
+							<div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+								<div class="list-group">
+									<a href="<%=request.getContextPath()%>/stu/schedule/personalSchedulePage.do" class="list-group-item">学期课表</a>
+									<a href="" class="list-group-item">全校课表</a>
+								</div>
+							</div>
+						</div>
+
+						<div class="panel panel-primary">
+							<div class="panel-heading" role="tab" id="headingFive">
+								<h4 class="panel-title">
+        							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+          								个人信息
+       								 </a>
+      							</h4>
+							</div>
+							<div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
+								<div class="list-group">
+									<a href="<%=request.getContextPath()%>/stu/userMange/showUserInfo.do" class="list-group-item">查看个人信息</a>
+									<a href="<%=request.getContextPath()%>/stu/userMange/changePasswordPage.do" class="list-group-item">修改密码</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>

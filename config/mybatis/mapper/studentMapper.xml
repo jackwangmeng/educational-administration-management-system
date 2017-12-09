@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+createTIme:2017-12-4 12:09 
+ -->
+<mapper namespace="com.fengxing.ems.mapper.StudentMapper" >
+	<resultMap type="com.fengxing.ems.entity.Student" id="studentMap">
+		<id column="stu_id" property="id"></id>
+		
+		<!-- 公开信息 -->
+		<result column="stu_name" property="name"/>
+		
+		<result column="mj_name" property="cls.major.name"/>
+		<result column="cg_name" property="cls.major.college"/>
+		<result column="cls_grade" property="cls.grade"/>
+		<result column="cls_num" property="cls.number"/>
+		<result column="stu_kind" property="kind"/>
+		
+		<!-- 较少用到的信息，这个信息必须要连developVersionPlan表，不查它可以提高性能-->
+		<result column="dp_version" property="cls.version.grade"/>
+		
+		<!-- 个人隐私信息 -->
+		<result column="stu_phone" property="phone"/>
+		<result column="stu_email" property="email"/>
+		<result column="stu_adress" property="adress"/>
+		<result column="stu_number" property="number"/>
+		<result column="stu_id_status" property="idStatus"/>
+		<result column="extra" property="extra"/>
+	</resultMap>
+	
+	<!-- 只查少量公开信息-->
+	<select id="selectPublicInfo" resultMap="studentMap" >
+		SELECT stu_name, stu.mj_name, cg_name, cls_grade, cls_num
+		FROM student stu INNER JOIN major mj ON stu.mj_name = mj.mj_name
+		<where>
+			<if test="id != null and id != &quot;&quot;">
+				stu_id = #{id}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 查出所有信息 -->
+	<select id="selectAllInfo" resultMap="studentMap">
+		SELECT stu_id, stu_name, cg_name, stu.mj_name, cls_grade, cls_num, stu_kind,
+		stu_phone, stu_email, stu_adress
+		FROM student stu 
+		INNER JOIN major mj ON stu.mj_name = mj.mj_name
+		<where>
+			<if test="id != null and id != &quot;&quot;">
+				stu_id = #{id}
+			</if>
+		</where>
+ 	</select>
+ 	
+ 	<!-- 更新学生个人信息 -->
+ 	<update id="updatePersonalInfo">
+ 		UPDATE student 
+ 		SET stu_phone = #{phone}, stu_email = #{email}, stu_adress = #{adress}
+ 		WHERE
+ 		stu_id = #{id} 
+ 	</update>
+ 	
+ 	<!-- 修改学生的密码 -->
+ 	<update id="updatePassword">
+ 		UPDATE student
+ 		SET stu_pwd = #{password}
+ 		WHERE stu_id = #{id}
+ 	</update>
+</mapper>

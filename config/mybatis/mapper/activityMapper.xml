@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+createTime:2017-12-4 18:41
+ -->
+<mapper namespace="com.fengxing.ems.mapper.ActivityMapper" >
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO activity(extra, ac_startTime, ac_endTime, ac_active, ac_target_grade,
+		ac_target_college, ac_target_major)
+		VALUES(#{extra}, #{startTime}, #{endTime}, #{active}, #{targetGrade}, #{targetCollege},
+		#{targetMajorName})
+	</insert>
+	
+	<resultMap type="com.fengxing.ems.entity.Activity" id="activityMap">
+		<id column="ac_id" property="id"></id>
+		<result column="ac_startTime" property="startTime"/>
+		<result column="ac_endTime" property="endTime"/>
+		<result column="ac_active" property="active"/>
+		<result column="ac_target_grade" property="targetGrade"/>
+		<result column="ac_target_college" property="targetCollege"/>
+		<result column="ac_target_major" property="targetMajorName"/>
+		<result column="extra" property="extra"/>
+	</resultMap>
+	
+	<select id="select" resultMap="activityMap">
+		SELECT *
+		FROM activity
+		<where>
+			<if test="id != null and id != &quot;&quot;">
+				ac_id = #{id}
+			</if>
+			
+			<!-- 选课时间没过期  &gt 大于-->
+			<if test="currentTime != null and currentTime != &quot;&quot;">
+				AND ac_endTime &gt; #{currentTime}
+			</if>
+			
+			<if test="active != null">
+				AND ac_active = #{active}
+			</if>
+		</where>
+	</select>
+</mapper>

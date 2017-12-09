@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+createTime:2017-12-4 16:52
+ -->
+<mapper namespace="com.fengxing.ems.mapper.TeacherMapper" >
+	<resultMap type="com.fengxing.ems.entity.Teacher" id="teacherMap">
+		<id column="tea_id" property="id"></id>
+		
+		<!-- 公开信息 -->
+		<result column="tea_pro" property="pro"/>
+		<result column="mj_name" property="major.name"/>
+		<result column="tea_name" property="name"/>
+		<result column="cg_name" property="major.college"/>
+		
+		<!-- 个人隐私信息 -->
+		<result column="tea_pwd" property="password"/>
+		<result column="tea_phone" property="phone"/>
+		<result column="tea_email" property="email"/>
+		<result column="tea_adress" property="adress"/>
+		<result column="tea_number" property="number"/>
+		<result column="tea_id_status" property="idStatus"/>
+		<result column="extra" property="extra"/>
+	</resultMap>
+	
+	<!-- 只查非隐私信息 -->
+	<select id="selectWithoutPersonalInfo" resultMap="teacherMap">
+		SELECT tea_name, tea.mj_name, tea_pro, cg_name
+		FROM teacher tea INNER JOIN major mj
+		ON tea.mj_name = mj.mj_name
+		WHERE tea_id = #{id}
+	</select>
+	
+	<!-- 查出所有信息 -->
+	<select id="selectWithAllInfo" resultMap="teacherMap">
+		SELECT * 
+		FROM teacher tea INNER JOIN major mj
+		ON tea.mj_name = mj.mj_name
+		WHERE tea_id = #{id}
+		<where>
+			<if test="id != null and id != &quot;&quot;">
+				tea_id = #{id}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 插入记录 -->
+	<insert id="insert">
+		INSERT INTO teacher(tea_id, tea_pwd, tea_name, tea_pro, mj_name, tea_phone, tea_email,
+			tea_adress, tea_number, tea_id_status, extra)
+		VALUES(#{id}, #{password}, #{name}, #{pro}, #{major.name},
+			#{phone}, #{email}, #{adress}, #{number}, #{idStatus}, #{extra})
+	</insert>
+</mapper>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+createTime 2017-12-4 11.50 
+ -->
+<mapper namespace="com.fengxing.ems.mapper.CourseKindMapper" >
+	<select id="getCourseKind" resultType="java.lang.String">
+		SELECT ck_name
+		FROM courseKind
+	</select>
+</mapper>

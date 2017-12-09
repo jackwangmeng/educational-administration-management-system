@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+createTime:2017-12-4 12:50 
+ -->
+<mapper namespace="com.fengxing.ems.mapper.CourseMapper" >
+
+	<!-- useGeneratedKeys="true" keyProperty="id" 返回自增主键,只适用于Mysql -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO
+		course(ct_id, tea_id, c_term, c_time, c_room, c_count,
+			c_used_count, c_status, ac_id, extra) 
+		VALUES(#{courseTemple.id}, #{teacher.id}, #{term}, #{time}, #{room}, 
+		#{maxCount}, #{usedCount}, #{status}, #{activity.id}, #{extra}) 
+	</insert>
+	
+	<!-- 
+		这个map中有activity的子查询
+		由于activity只有管理员才会用到
+		所以这个map只给管理员用
+	 -->
+	<resultMap type="com.fengxing.ems.entity.Course" id="courseMap">
+		<id column="c_id" property="id"></id>
+		
+		<result column="c_term" property="term"/>
+		<result column="c_time" property="time"/>
+		<result column="c_room" property="room"/>
+		<result column="c_count" property="maxCount"/>
+		<result column="c_used_count" property="usedCount"/>
+		<result column="c_status" property="status"/>
+		
+		<result column="ct_id" property="courseTemple.id"/>
+		<result column="tea_id" property="teacher.id"/>
+		<result column="ac_id" property="activity.id"/>
+		
+		<!-- teacher的级联属性 -->
+		<result column="tea_pro" property="teacher.pro"/>
+		<result column="mj_name" property="teacher.major.name"/>
+		<result column="tea_name" property="teacher.name"/>
+		
+		<!-- courseTemple的级联属性 -->
+		<result column="ct_name" property="courseTemple.name"/>
+		<result column="ck_name" property="courseTemple.courseKind"/>
+		<result column="ct_hour" property="courseTemple.hour"/>
+		<result column="ct_point" property="courseTemple.point"/>
+		<result column="ct_open_college" property="courseTemple.openCollege"/>
+		<result column="ct_extra" property="courseTemple.extra"/>
+		
+		<!-- activity的级联属性 -->
+		<result column="ac_startTime" property="activity.startTime"/>
+		<result column="ac_endTime" property="activity.endTime"/>
+		<result column="ac_active" property="activity.active"/>
+		<result column="ac_target_grade" property="activity.targetGrade"/>
+		<result column="ac_target_college" property="activity.targetCollege"/>
+		<result column="ac_target_major" property="activity.targetMajorName"/>
+		<result column="ac_extra" property="activity.extra"/>
+	</resultMap>
+
+	<!--
+		查出所有的外键信息,给管理员使用
+	 -->
+	<select id="selectAllInfo" resultMap="courseMap">
+		SELECT * 
+		FROM course c LEFT JOIN courseTemple ct ON c.ct_id = ct.ct_id
+		LEFT JOIN activity ac ON c.ac_id = ac.ac_id
+		LEFT JOIN teacher tea ON c.tea_id = tea.tea_id
+		<!-- 查询条件未经过测试 -->
+		<where>
+			<if test="id != null and id != &quot;&quot;">
+				id = #{id}
+			</if>
+			<if test="activityId != null and activityId != &quot;&quot;">
+				c.ac_id = #{activityId}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 不查出任何外键信息 -->
+	<select id="selectWithoutAnyForeignKeyInfo" resultMap="courseMap">
+		SELECT * FROM course
+		<where>
+			<if test="id != null and id != &quot;&quot;">
+				c_id = #{id}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 不查出activity的信息，给老师和学生使用 -->
+	<select id="selectWithoutActivity" resultMap="courseMap">
+		SELECT * 
+		FROM course c LEFT JOIN courseTemple ct ON c.ct_id = ct.ct_id
+		LEFT JOIN activity ac ON c.ac_id = ac.ac_id
+		LEFT JOIN teacher tea ON c.tea_id = tea.tea_id
+		
+		<bind name="courseNamePattern" value="'%' + courseName + '%'"/>
+		<where>
+			<if test="id != null and id != &quot;&quot;">
+				id = #{id}
+			</if>
+			
+			<if test="activityId != null and activityId != &quot;&quot;">
+				AND c.ac_id = #{activityId}
+			</if>
+			
+			<if test="courseKind != null and courseKind != &quot;&quot;">
+				AND ct.ck_name = #{courseKind}
+			</if>
+			
+			<if test="courseName != null and courseName != &quot;&quot;">
+				AND ct.ct_name like #{courseNamePattern}
+			</if>
+			
+			<if test="courseTimeRegex != null and courseTimeRegex != &quot;&quot;">
+				AND c.c_time like #{courseTimeRegex}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 学生退选，判断选课退选课程所在选课活动是否过期的时候调用 -->
+	<select id="selectOnlyActivityInfo" resultMap="courseMap">
+		SELECT ac_active, ac_startTime, ac_endTime
+		FROM course c LEFT JOIN activity ac ON c.ac_id = ac.ac_id
+		<where>
+			<if test="id != null and id != &quot;&quot;">
+				c.c_id = #{id}
+			</if>
+		</where>
+		
+	</select>
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengxing.ems.mapper.UserMapper" >
+
+	<select id="getUser" resultType="com.fengxing.ems.entity.User">
+		<if test="role =='student' ">
+			SELECT
+				stu_id AS id, stu_pwd AS password, stu_id_status AS idStatus,
+				stu_name AS name, stu_id_status AS idStatus
+			FROM student
+			WHERE stu_id = #{id}
+		</if>
+	</select>
+</mapper>

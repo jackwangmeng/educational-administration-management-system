@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+createTIme:2017-12-4 12:09 
+ -->
+<mapper namespace="com.fengxing.ems.mapper.CourseTempleMapper" >
+	<resultMap type= "com.fengxing.ems.entity.CourseTemple" id="courseTempleMap">
+		<id column="ct_id" property="id"></id>
+		<result column="ct_name" property="name"/>
+		<result column="ck_name" property="courseKind"/>
+		<result column="ct_hour" property="hour"/>
+		<result column="ct_point" property="point"/>
+		<result column="ct_open_college" property="openCollege"/>
+		<result column="extra" property="extra"/>
+	</resultMap>
+	
+	<select id="select" resultMap="courseTempleMap">
+		SELECT 
+			ct_id, ct_name, ct_hour, ct_point, ct_open_college, extra, ck_name
+		FROM courseTemple
+		<where>
+			<if test="id != null and id != &quot;&quot;">
+				ct_id = #{id}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO courseTemple
+			(ct_name, ct_point, ct_hour, ct_open_college, ck_name, extra)
+		VALUES
+			(#{name}, #{point}, #{hour}, #{openCollege}, #{courseKind}, #{extra})
+	</insert>
+</mapper>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+createTime:2017-12-7 9:03
+ -->
+<mapper namespace="com.fengxing.ems.mapper.ScoreMapper" >
+	<insert statementType="CALLABLE" id="studentAddCourse">
+		{
+			CALL pr_student_addCourse(#{activityId}, #{studentId},
+			 #{courseId}, #{message, mode=OUT, jdbcType=VARCHAR})
+		}
+	</insert>
+	
+	<delete statementType="CALLABLE" id="studentDeleteCourse">
+		{
+			CALL pr_student_deleteCourse(#{studentId}, #{courseId}, 
+			#{message, mode=OUT, jdbcType=VARCHAR})
+		}
+	</delete>
+	
+	<resultMap type="com.fengxing.ems.entity.Score" id="scoreMap">
+		<result column="stu_id" property="student.id"/>
+		<result column="c_id" property="course.id"/>
+		<result column="sc_score" property="score"/>
+		
+		<!-- course的级联属性 -->		
+		<result column="c_term" property="course.term"/>
+		<result column="c_time" property="course.time"/>
+		<result column="c_room" property="course.room"/>
+		<result column="c_status" property="course.status"/>
+		
+		<!-- courseTemple的级联属性 -->
+		<result column="ct_id" property="course.courseTemple.id"/>
+		<result column="ct_name" property="course.courseTemple.name"/>
+		<result column="ct_hour" property="course.courseTemple.hour"/>
+		<result column="ct_point" property="course.courseTemple.point"/>
+		<result column="ck_name" property="course.courseTemple.courseKind"/>
+		<result column="ck_important" property="course.courseTemple.importance"/> 
+		
+		<!-- teacher的级联属性 -->
+		<result column="tea_id" property="course.teacher.id"/>
+		<result column="tea_name" property="course.teacher.name"/>
+	</resultMap>
+	
+	<!--给选课判断是否冲突的时候用 -->
+	<select id="selectForJudgeCourseConflict" resultMap="scoreMap">
+		SELECT c.c_time, c.c_term, sc.c_id, ct_name
+		FROM score sc INNER JOIN course c ON sc.c_id = c.c_id
+		INNER JOIN courseTemple ct ON c.ct_id = ct.ct_id
+		<where>
+			<if test="studentId != null and studentId != &quot;&quot;">
+				sc.stu_id = #{studentId}
+			</if>
+			<if test="courseTerm != null and courseTerm != &quot;&quot;">
+				AND c.c_term = #{courseTerm}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 查询已选课程 -->
+	<select id="studentGetAddedCourse" resultMap="scoreMap">
+		SELECT sc.c_id, c.ct_id, ck_name, ct_name , c_room, c_time, ct_point, tea_name
+		FROM score sc INNER JOIN course c ON sc.c_id = c.c_id
+		LEFT JOIN courseTemple ct ON c.ct_id = ct.ct_id
+		LEFT JOIN teacher tea ON c.tea_id = tea.tea_id
+		<where>
+			<if test="studentId != null and studentId != &quot;&quot;">
+				sc.stu_id = #{studentId}
+			</if>
+			<if test="courseTerm != null and courseTerm != &quot;&quot;">
+				AND c.c_term = #{courseTerm}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 学生查询课程成绩 -->
+	<select id="studentGetScore" resultMap="scoreMap">
+		SELECT c.c_term, c.ct_id, ct.ct_name, sc.sc_score, ct.ct_point, ct.ct_hour,
+		ck.ck_important, ct.ck_name
+		FROM score sc INNER JOIN course c ON sc.c_id = c.c_id
+		INNER JOIN courseTemple ct ON c.ct_id = ct.ct_id
+		INNER JOIN courseKind ck ON ct.ck_name = ck.ck_name
+		<bind name="courseNamePattern" value="'%' + courseName + '%'"/>
+		<where>
+			<if test="studentId != null and studentId != &quot;&quot;">
+				sc.stu_id = #{studentId}
+			</if>
+			<if test="courseKind != null and courseKind != &quot;&quot;">
+				AND ct.ck_name = #{courseKind}
+			</if>
+			<if test="courseTerm != null and courseTerm != &quot;&quot;">
+				AND c.c_term = #{courseTerm}
+			</if>
+			<if test="courseName != null and courseName != &quot;&quot;">
+				AND ct.ct_name like #{courseNamePattern}
+			</if>
+		</where>
+		AND isnull(sc.sc_score) = false
+	</select>
+	
+	<!-- 学生查询课表 -->
+	<select id="studentGetSchedule" resultMap="scoreMap">
+		SELECT ct.ct_name, tea.tea_name, c.c_time, c.c_room
+		FROM score sc 
+		INNER JOIN course c ON sc.c_id = c.c_id
+		INNER JOIN courseTemple ct ON c.ct_id = ct.ct_id
+		INNER JOIN teacher tea ON c.tea_id = tea.tea_id
+		WHERE
+		sc.stu_id = #{studentId}
+		AND 
+		c.c_term = #{courseTerm}
+	</select>
+</mapper>
